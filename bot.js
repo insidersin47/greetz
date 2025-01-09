@@ -10,6 +10,7 @@ require("dotenv").config();
 const {
   CronJob
 } = require('cron');
+const redisClient = require('./redis.js');
 const handleWordImageCommand = require("./pics.js");
 
 const express = require("express");
@@ -112,7 +113,7 @@ client.on("guildMemberAdd", (member) => {
 client.on("messageCreate", async (message) => {
   try {
 
-    if (message.content.startsWith("px") || !message.author.bot) {
+    if (message.content.startsWith("px")) {
       handleWordImageCommand(message);
     }
 

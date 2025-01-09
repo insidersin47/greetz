@@ -77,7 +77,7 @@ function handleWordImageCommand(message) {
           const attachment = new AttachmentBuilder(imageUrl);
           message.channel.send({ content: ``, files: [attachment] });
         } else {
-          message.reply(`No image found for the word \`${word}\`. Use \`px set <word> <url>\` to add one.`);
+          message.reply(`No image found for the word \`${wordUsed}\`. Use \`px set <word> <url>\` to add one.`);
         }
         break;
     }
