@@ -61,8 +61,8 @@ function handleWordImageCommand(message) {
         break;
 
       default:
-        const word = command.toLowerCase();
-        const imageUrl = wordImageMap[serverId][word];
+        const wordUsed = command.toLowerCase();
+        const imageUrl = wordImageMap[serverId][wordUsed];
 
         if (imageUrl) {
           // Check bot permissions
