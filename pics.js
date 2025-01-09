@@ -83,7 +83,6 @@ function handleWordImageCommand(message) {
     }
   } catch (err) {
     console.error(err);
-    message.reply("An error occurred while processing the command.");
   }
 }
 
