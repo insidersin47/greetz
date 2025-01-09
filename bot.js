@@ -7,6 +7,10 @@ const {
 } = require("discord.js");
 const fs = require("fs");
 require("dotenv").config();
+const {
+  CronJob
+} = require('cron');
+const handleWordImageCommand = require("./pics.js");
 
 const express = require("express");
 
@@ -25,7 +29,7 @@ app.listen(3000, () => {
   console.log("Server is running on http://localhost:3000");
 });
 
-const client = new Client({
+const client = new Client( {
   intents: [
     GatewayIntentBits.Guilds,
     GatewayIntentBits.GuildMembers,
@@ -36,6 +40,17 @@ const client = new Client({
 
 // Load server data from a JSON file
 let serverData = JSON.parse(fs.readFileSync("serverData.json", "utf8"));
+
+// Define a cron job that runs every 8 minutes
+const job = new CronJob('*/8 * * * *', () => {
+  const now = new Date().toISOString();
+  console.log(`Heartbeat logged at: ${now}`);
+  // Overwrite the heartbeat log file
+  fs.writeFileSync('/tmp/heartbeat.log', `Last Heartbeat: ${now}`);
+});
+
+// Start the cron job
+job.start();
 
 client.once("ready", async () => {
   console.log(`Logged in as ${client.user.tag}!`);
@@ -53,15 +68,15 @@ client.on("guildMemberAdd", (member) => {
       // Determine the channel to send the message
       const channelId = welcomeMessage.channel;
       const welcomeChannel =
-        member.guild.channels.cache.get(channelId) ||
-        member.guild.channels.cache.find((ch) => ch.name === "welcome");
+      member.guild.channels.cache.get(channelId) ||
+      member.guild.channels.cache.find((ch) => ch.name === "welcome");
 
       if (welcomeChannel) {
         // Check if the bot has permission to send messages in the channel
         if (
           !welcomeChannel
-            .permissionsFor(member.guild.members.me)
-            ?.has(PermissionsBitField.Flags.SendMessages)
+          .permissionsFor(member.guild.members.me)
+          ?.has(PermissionsBitField.Flags.SendMessages)
         ) {
           console.error(
             "Bot does not have permission to send messages in the welcome channel."
@@ -71,15 +86,16 @@ client.on("guildMemberAdd", (member) => {
 
         // Create and send the welcome message
         let content = welcomeMessage.description
-          ? welcomeMessage.description
-              .replace("{username}", member.user.username)
-              .replace("{user}", `<@${member.user.id}>`)
-          : "";
+        ? welcomeMessage.description
+        .replace("{username}", member.user.username)
+        .replace("{user}", `<@${member.user.id}>`): "";
 
         // Handle image attachment
         if (welcomeMessage.image) {
           const attachment = new AttachmentBuilder(welcomeMessage.image);
-          welcomeChannel.send({ content, files: [attachment] });
+          welcomeChannel.send({
+            content, files: [attachment]
+          });
         } else {
           welcomeChannel.send(content);
         }
@@ -95,6 +111,11 @@ client.on("guildMemberAdd", (member) => {
 // Event: Commands to update welcome message settings
 client.on("messageCreate", async (message) => {
   try {
+
+    if (message.content.startsWith("px") || !message.author.bot) {
+      handleWordImageCommand(message);
+    }
+
     if (!message.content.startsWith(".z") || message.author.bot) return;
 
     const args = message.content.slice(2).trim().split(" ");
@@ -103,7 +124,9 @@ client.on("messageCreate", async (message) => {
 
     // Ensure server data exists
     if (!serverData.servers[serverId]) {
-      serverData.servers[serverId] = { welcome_message: {} };
+      serverData.servers[serverId] = {
+        welcome_message: {}
+      };
     }
 
     // Check if the user has moderator permissions
@@ -126,8 +149,8 @@ client.on("messageCreate", async (message) => {
 
       case "channel":
         const channel =
-          message.mentions.channels.first() ||
-          message.guild.channels.cache.get(value);
+        message.mentions.channels.first() ||
+        message.guild.channels.cache.get(value);
         if (channel) {
           serverData.servers[serverId].welcome_message.channel = channel.id;
           message.reply(`Welcome messages will now be sent to ${channel}.`);
@@ -138,59 +161,59 @@ client.on("messageCreate", async (message) => {
 
       case "help":
         const helpText = `
-**Bot Commands**
-- \`.z description <new description>\`: Update the description of the welcome message.
-- \`.z image <url>\`: Update the image of the welcome message.
-- \`.z channel <#channel>\`: Set the channel for welcome messages.
+        **Bot Commands**
+        - \`.z description <new description>\`: Update the description of the welcome message.
+        - \`.z image <url>\`: Update the image of the welcome message.
+        - \`.z channel <#channel>\`: Set the channel for welcome messages.
 
-**Placeholders**
-\`{username}\`: The new user's name.
-\`{user}\`: Mention the new user.
+        **Placeholders**
+        \`{username}\`: The new user's name.
+        \`{user}\`: Mention the new user.
 
-**Note**: Only moderators can use these commands.`;
+        **Note**: Only moderators can use these commands.`;
         message.reply(helpText);
         break;
 
       default:
         message.reply("Unknown command. Use `.z help` for a list of commands.");
+      }
+
+      // Save updates to JSON file
+      fs.writeFileSync("serverData.json", JSON.stringify(serverData, null, 2));
+    } catch (err) {
+      console.error(err);
     }
+  });
 
-    // Save updates to JSON file
-    fs.writeFileSync("serverData.json", JSON.stringify(serverData, null, 2));
-  } catch (err) {
-    console.error(err);
-  }
-});
+  function updateStatus(client) {
+    let toggle = true; // Flag to switch between server count and member count
 
-function updateStatus(client) {
-  let toggle = true; // Flag to switch between server count and member count
+    setInterval(() => {
+      const guildCount = client.guilds.cache.size || 32;
+      let totalMembers = 0;
 
-  setInterval(() => {
-    const guildCount = client.guilds.cache.size || 32;
-    let totalMembers = 0;
+      client.guilds.cache.forEach(guild => {
+        totalMembers += guild.memberCount;
+      });
 
-    client.guilds.cache.forEach(guild => {
-      totalMembers += guild.memberCount;
-    });
-
-    // Alternate between showing server count and member count
-    const activity = toggle
+      // Alternate between showing server count and member count
+      const activity = toggle
       ? {
-          name: `${guildCount} special servers`,
-          type: ActivityType.Watching,
-        }
-      : {
-          name: `with ${totalMembers} members`,
-          type: ActivityType.Playing,
-        };
+        name: `${guildCount} special servers`,
+        type: ActivityType.Watching,
+      }: {
+        name: `with ${totalMembers} members`,
+        type: ActivityType.Playing,
+      };
 
-    client.user.presence.set({
-      activities: [activity],
-    });
+      client.user.presence.set({
+        activities: [activity],
+      });
 
-    toggle = !toggle; // Toggle the flag to switch activities
-  }, 6000); // Update every 60 seconds (1 minute)
-}
+      toggle = !toggle; // Toggle the flag to switch activities
+    },
+      6000); // Update every 60 seconds (1 minute)
+  }
 
-// Log in to Discord
-client.login(process.env.BOT_TOKEN);
+  // Log in to Discord
+  client.login(process.env.BOT_TOKEN);
