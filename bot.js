@@ -21,6 +21,15 @@ app.get("/", (req, res) => {
   res.send("Hello, the server is running!");
 });
 
+const client = new Client( {
+  intents: [
+    GatewayIntentBits.Guilds,
+    GatewayIntentBits.GuildMembers,
+    GatewayIntentBits.GuildMessages,
+    GatewayIntentBits.MessageContent,
+  ],
+});
+
 
   // Log in to Discord
   client.login(process.env.BOT_TOKEN).catch((err) => {
@@ -30,15 +39,6 @@ app.get("/", (req, res) => {
 // Start the server and listen on port 3000
 app.listen(3000, () => {
   console.log("Server is running on http://localhost:3000");
-});
-
-const client = new Client( {
-  intents: [
-    GatewayIntentBits.Guilds,
-    GatewayIntentBits.GuildMembers,
-    GatewayIntentBits.GuildMessages,
-    GatewayIntentBits.MessageContent,
-  ],
 });
 
 // Load server data from a JSON file
