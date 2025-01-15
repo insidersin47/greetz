@@ -113,7 +113,9 @@ client.on("guildMemberAdd", (member) => {
 client.on("messageCreate", async (message) => {
   try {
 
-    if (message.content.startsWith("nami")) {
+    console.log("listening");
+
+    if (message.content.startsWith("px")) {
       handleWordImageCommand(message);
     }
 
