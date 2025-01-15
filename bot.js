@@ -30,6 +30,8 @@ const client = new Client( {
   ],
 });
 
+console.log(process.env.BOT_TOKEN)
+
 
   // Log in to Discord
   client.login(process.env.BOT_TOKEN).catch((err) => {
