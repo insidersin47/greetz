@@ -7,10 +7,6 @@ const {
 } = require("discord.js");
 const fs = require("fs");
 require("dotenv").config();
-const {
-  CronJob
-} = require('cron');
-const redisClient = require('./redis.js');
 const handleWordImageCommand = require("./pics.js");
 
 const express = require("express");
@@ -41,17 +37,6 @@ const client = new Client( {
 
 // Load server data from a JSON file
 let serverData = JSON.parse(fs.readFileSync("serverData.json", "utf8"));
-
-// Define a cron job that runs every 8 minutes
-const job = new CronJob('*/8 * * * *', () => {
-  const now = new Date().toISOString();
-  console.log(`Heartbeat logged at: ${now}`);
-  // Overwrite the heartbeat log file
-  fs.writeFileSync('/tmp/heartbeat.log', `Last Heartbeat: ${now}`);
-});
-
-// Start the cron job
-job.start();
 
 client.once("ready", async () => {
   console.log(`Logged in as ${client.user.tag}!`);
@@ -113,9 +98,7 @@ client.on("guildMemberAdd", (member) => {
 client.on("messageCreate", async (message) => {
   try {
 
-    console.log("listening");
-
-    if (message.content.startsWith("px")) {
+    if (message.content.startsWith("nami")) {
       handleWordImageCommand(message);
     }
 
