@@ -96,13 +96,10 @@ client.on("guildMemberAdd", (member) => {
 
 // Event: Commands to update welcome message settings
 client.on("messageCreate", async (message) => {
-  try {
+  try 
+    handleWordImageCommand(message);
 
-    if (message.content.startsWith("nami")) {
-      handleWordImageCommand(message);
-    }
-
-    if (!message.content.startsWith(".z") || message.author.bot) return;
+    if (!message.content.startsWith(".z")) return;
 
     const args = message.content.slice(2).trim().split(" ");
     const command = args.shift()?.toLowerCase();
