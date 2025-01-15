@@ -21,6 +21,12 @@ app.get("/", (req, res) => {
   res.send("Hello, the server is running!");
 });
 
+
+  // Log in to Discord
+  client.login(process.env.BOT_TOKEN).catch((err) => {
+  console.error("Login Error:", err);
+  });
+
 // Start the server and listen on port 3000
 app.listen(3000, () => {
   console.log("Server is running on http://localhost:3000");
@@ -198,5 +204,3 @@ client.on("messageCreate", async (message) => {
       6000); // Update every 60 seconds (1 minute)
   }
 
-  // Log in to Discord
-  client.login(process.env.BOT_TOKEN);
