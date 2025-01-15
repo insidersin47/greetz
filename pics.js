@@ -108,7 +108,7 @@ function handleWordImageCommand(message) {
       const ruleEmbed = new EmbedBuilder()
         .setTitle(`Rule #${ruleNo}`)
         .setImage(imageUrl)
-        .setColor(0x00ff00);
+        .setColor("#f31717");
 
       return message.channel.send({ embeds: [ruleEmbed] });
     }
@@ -160,9 +160,9 @@ function handleWordImageCommand(message) {
         const user = message.guild.members.cache.get(targetUserId)?.user;
         const username = user ? user.username : `UserID: ${targetUserId}`;
         const aboutEmbed = new EmbedBuilder()
-          .setTitle(`${username}'s About`)
+          .setTitle(`${username}'𝘴 𝘈𝘣𝘰𝘶𝘵`)
           .setDescription(existingAbout)
-          .setColor(0x00ff00);
+          .setColor("#5c7ff6");
 
         // If we can get the user's avatar
         if (user?.displayAvatarURL()) {
@@ -204,6 +204,10 @@ function handleWordImageCommand(message) {
 
         if (!url.startsWith("http")) {
           return message.reply("Please provide a valid URL.");
+        }
+        
+        if (word.toLowerCase() === "rules" || word.toLowerCase() === "about") {
+          return message.reply("The words `rules` and `about` can't be used for an image!");
         }
 
         wordImageMap[serverId][word.toLowerCase()] = url;
@@ -256,8 +260,9 @@ function handleWordImageCommand(message) {
         // e.g. nami <word>
         const wordUsed = command.toLowerCase();
         const imageUrl = wordImageMap[serverId][wordUsed];
+        
 
-        if (imageUrl) {
+        if (imageUrl && typeof imageUrl === "string" && imageUrl.startsWith('http') && (wordUsed !== "rules" && wordUsed !== "about")) {
           // Check bot permissions
           if (
             !message.channel
@@ -271,7 +276,7 @@ function handleWordImageCommand(message) {
           }
 
           const attachment = new AttachmentBuilder(imageUrl);
-          message.channel.send({ files: [attachment] });
+          message.channel.send({ content: ` `, files: [attachment] });
         } else {
           message.reply(
             `No image found for the word \`${wordUsed}\`. ` +

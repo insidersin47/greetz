@@ -10,7 +10,7 @@
   "description": "",
   "dependencies": {
     "cron": "^3.3.2",
-    "discord.js": "^14.17.2",
+    "discord.js": "^14.17.3",
     "dotenv": "^16.4.7",
     "express": "^4.21.2",
     "redis": "^4.7.0",
