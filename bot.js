@@ -96,8 +96,8 @@ client.on("guildMemberAdd", (member) => {
 
 // Event: Commands to update welcome message settings
 client.on("messageCreate", async (message) => {
-  try 
-    handleWordImageCommand(message);
+  try {
+   await handleWordImageCommand(message);
 
     if (!message.content.startsWith(".z")) return;
 
