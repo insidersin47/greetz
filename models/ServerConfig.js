@@ -1,4 +1,4 @@
-const mongoose = require("mongoose");
+import mongoose from "mongoose";
 
 const RuleSchema = new mongoose.Schema({
   ruleNo: {
@@ -35,34 +35,43 @@ const WordImageSchema = new mongoose.Schema({
 });
 
 const WelcomeMessageSchema = new mongoose.Schema({
-  channel: { type: String, default: "" },
-  description: { type: String, default: "" },
-  image: { type: String, default: "" },
-});
+  channel: {
+    type: String, default: ""
+    },
+    description: {
+      type: String, default: ""
+    },
+    image: {
+      type: String, default: ""
+    },
+  });
 
-// Each server (guild) in Discord is one document
-const ServerConfigSchema = new mongoose.Schema({
-  serverId: {
-    type: String,
-    required: true,
-    unique: true,
-  },
-  welcome_message: {
-    type: WelcomeMessageSchema,
+  // Each server (guild) in Discord is one document
+  const ServerConfigSchema = new mongoose.Schema({
+    serverId: {
+      type: String,
+      required: true,
+      unique: true,
+    },
+    welcome_message: {
+      type: WelcomeMessageSchema,
     default: () => ({}),
-  },
-  rules: {
-    type: [RuleSchema],
+    },
+    rules: {
+      type: [RuleSchema],
     default: [],
-  },
-  about: {
-    type: [AboutSchema],
+    },
+    about: {
+      type: [AboutSchema],
     default: [],
-  },
-  wordImages: {
-    type: [WordImageSchema],
+    },
+    wordImages: {
+      type: [WordImageSchema],
     default: [],
-  },
-});
+    },
+    ai_channel: {
+      type: String, default: ""
+    }
+  });
 
-module.exports = mongoose.model("ServerConfig", ServerConfigSchema);
+  export default mongoose.model("ServerConfig", ServerConfigSchema);
