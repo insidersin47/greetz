@@ -1,6 +1,6 @@
-const { createClient } = require('redis');
-const dotenv = require('dotenv');
-const winston = require('winston');
+import { createClient } from 'redis';
+import dotenv from 'dotenv';
+import winston from 'winston';
 
 dotenv.config();
 
@@ -84,4 +84,4 @@ process.on('SIGINT', shutdown);
 process.on('SIGTERM', shutdown);
 
 // Export the Redis client
-module.exports = redisClient;
+export default redisClient;

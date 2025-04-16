@@ -1,9 +1,10 @@
-const {
+import {
   PermissionsBitField,
   AttachmentBuilder,
   EmbedBuilder,
-} = require("discord.js");
-const ServerConfig = require("./models/ServerConfig.js");
+} from "discord.js";
+
+import ServerConfig from "./models/ServerConfig.js";
 
 // Check if the member is an admin (for mod-only commands)
 function isAdmin(member) {
@@ -266,24 +267,20 @@ async function handleWordImageCommand(message) {
         }
 
       case "help": {
-          const helpText = `
-          **nami Commands**
-
-          **Rule Commands**
-          - \`nami set rule <ruleNo> <description>\` (Admins only): Set/update rule description
-          - \`nami rule <ruleNo>\`: Show rule description in an embed
-          - \`nami rule <ruleNo> delete\` (Admins only): Delete a rule
-
-          **About Commands**
-          - \`nami about @user <description>\` (Admins only): Set or update a user’s "about" info (max 200 chars)
-          - \`nami about @user\`: Show a user’s "about" info
-          - \`nami about @user delete\` (Admins only): Remove a user’s "about" info
-
-          **Word-Image Commands (Legacy)**
-          - \`nami <word>\`: Send the associated image
-          - \`nami set <word> <url>\` (Admins only): Set an image URL for a word
-          - \`nami delete <word>\` (Admins only): Delete the image URL for a word
-          `;
+          const helpText =
+          "**nami Commands**\n\n" +
+          "**Rule Commands**\n" +
+          "- `nami set rule <ruleNo> <description>` (Admins only): Set/update rule description\n" +
+          "- `nami rule <ruleNo>`: Show rule description in an embed\n" +
+          "- `nami rule <ruleNo> delete` (Admins only): Delete a rule\n\n" +
+          "**About Commands**\n" +
+          "- `nami about @user <description>` (Admins only): Set or update a user’s \"about\" info (max 200 chars)\n" +
+          "- `nami about @user`: Show a user’s \"about\" info\n" +
+          "- `nami about @user delete` (Admins only): Remove a user’s \"about\" info\n\n" +
+          "**Word-Image Commands (Legacy)**\n" +
+          "- `nami <word>`: Send the associated image\n" +
+          "- `nami set <word> <url>` (Admins only): Set an image URL for a word\n" +
+          "- `nami delete <word>` (Admins only): Delete the image URL for a word";
           return message.reply(helpText);
         }
 
@@ -344,4 +341,4 @@ async function handleWordImageCommand(message) {
   }
 }
 
-module.exports = handleWordImageCommand;
+export default handleWordImageCommand;
